@@ -1,0 +1,105 @@
+<mat-toolbar color="primary" class="custom-toolbar">
+  <div class="head">
+    <div class="questions">
+      <mat-button-toggle *ngFor="let question of questions; let i = index" [value]="question"
+        (click)="onQuestionSelected(question)" [class.highlighted]="question === selectedQuestion" class="Question">
+        {{ i + 1 }}
+      </mat-button-toggle>
+    </div>
+
+
+    
+    <div class="timer">
+      <app-timer [candidateId]="candidateId"></app-timer>
+    </div>
+    <div class="end-test">
+      <button type="submit" class="submit-button" id="endButton" (click)="openWarningDialog()">End Test</button>
+    </div>
+  </div>
+</mat-toolbar>
+<div class="parent">
+  <div class="left">
+
+    <mat-tab-group>
+      <!-- <mat-tab label="Explorer">
+        <app-explorer></app-explorer>
+      </mat-tab> -->
+      <mat-tab label="Problem Statement" >
+        
+          <!-- <span matTooltip="Problem Statement">{{ selectedQuestion ? selectedQuestion.title : 'Problem Statement'
+            }}</span> -->
+            <ng-template mat-tab-label>
+            <span>Description</span>
+            </ng-template>
+        <div class="problem-section scrollable-container" *ngIf="selectedQuestion">
+          <h2>{{ selectedQuestion.title }}</h2>
+
+
+
+
+          <div class="alignment">
+          <ng-container *ngIf="selectedQuestion.description.includes('Expected Output :') else plainDescription">
+            <p>{{ selectedQuestion.description.split('Expected Output :')[0] }}</p>
+          </ng-container>
+          <h3 *ngIf="selectedQuestion.description.includes('Expected Output :')">Expected Output</h3>
+          <ng-template #plainDescription>
+            <p>{{ selectedQuestion.description }}</p>
+          </ng-template>
+          <div *ngIf="selectedQuestion.description.includes('Expected Output :')">
+      <ng-container *ngIf="selectedQuestion.description | expectedOutput as expectedOutputData; else plainText">
+        <table>
+          <tr>
+            <!-- Adjust these based on the actual structure of the expected output -->
+            <th *ngFor="let key of expectedOutputData[0] | keyvalue">{{ key.key }}</th>
+          </tr>
+          <tr *ngFor="let row of expectedOutputData">
+            <td *ngFor="let value of row | keyvalue">{{ value.value }}</td>
+          </tr>
+        </table>
+      </ng-container>
+      <ng-template #plainText>
+        <!-- Handle the case where parsing fails (plain text) -->
+        {{ selectedQuestion.description | expectedOutput }}
+      </ng-template>
+    </div>
+
+
+
+
+
+
+
+
+
+
+          <div class="TestCase">
+            <div *ngFor="let testCase of selectedQuestion.testCases; let i = index">
+              <h2>Example {{ i + 1 }}:</h2>
+              <h3>Input:</h3>
+              <h4>{{ testCase.input }}</h4>
+              <h3>Output:</h3>
+              <h4>{{ testCase.output }}</h4>
+              <br><br>
+            </div>
+          </div>
+          <p>Copyright ©️ 2024 Accolite All rights reserved</p>
+        </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <div class="right" [ngStyle]="{ 'width.px': rightWidth }">
+    <app-monaco-editor [questionId]="selectedQuestionId" [candidateId]="candidateId"
+      [selectedLanguage]="selectedLanguage" [consoleContent]="consoleContent"
+      (languageChanged)="onLanguageChange($event)"
+      (contentFromLocalStorage)="onContentFromLocalStorage($event)">  
+    </app-monaco-editor>
+    <app-console></app-console>
+    
+    <!-- <app-monaco-editor [questionId]="selectedQuestionId" [candidateId]="candidateId"
+        [selectedLanguage]="selectedLanguage" [consoleContent]="consoleContent">
+    </app-monaco-editor>
+    <app-console></app-console> -->
+  </div>
+</div>
